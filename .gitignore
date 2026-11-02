@@ -1,5 +1,19 @@
 .vscode/
+__pycache__
 
 # Ignore everything inside datasets/ but keep the folder
 datasets/*
 !datasets/.gitkeep
+
+
+# Thjam
+*.mp4
+/g2o-python/
+/orb-slam3/
+/data_odometry_gray/
+
+# Local calibration and pose data
+*calibration*
+/calibrations/
+/poses.npy
+
