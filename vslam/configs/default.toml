@@ -6,20 +6,21 @@ calibration_file = "phone_calibration.npz"             # used for own video only
 
 # --- VO parameters (two-view initialisation) ---
 FRAME_STEP = 1          # only use every n'th frame
-MIN_MATCHES = 2         # matches after ratio test needed to even try a pose
+WAIT_MS = 1             # 1 = play, 0 = step frame by frame
+
+MIN_MATCHES = 30         # matches after ratio test needed to even try a pose
 MIN_INLIERS = 5         # RANSAC/cheirality inliers needed to accept a pose
 MIN_PARALLAX = 15.0     # median pixel motion needed before trusting a pose
-MAX_LOST = 10           # consecutive failures before re-anchoring / re-initialising
-WAIT_MS = 1             # 1 = play, 0 = step frame by frame
+MAX_LOST = 5           # consecutive failures before re-anchoring / re-initialising
 SCALE = 0.7897          # kitti calculated scale
 
 # --- local map parameters ---
-MIN_INIT_POINTS = 50    # triangulated points needed to accept the initial map
-MAX_REPROJ_ERR = 2.0    # px, max reprojection error of a triangulated point (both views)
-MIN_TRI_ANGLE = 0.5     # deg, min angle between the two viewing rays of a new point
-MIN_PNP_MATCHES = 15    # frame-to-map matches needed to even try PnP
-MIN_PNP_INLIERS = 15    # PnP-RANSAC inliers needed to accept a pose
-PNP_REPROJ_ERR = 3.0    # px, PnP-RANSAC inlier threshold
+MIN_INIT_POINTS = 100    # triangulated points needed to accept the initial map
+MAX_REPROJ_ERR = 1.5    # px, max reprojection error of a triangulated point (both views)
+MIN_TRI_ANGLE = 1       # deg, min angle between the two viewing rays of a new point
+MIN_PNP_MATCHES = 25    # frame-to-map matches needed to even try PnP
+MIN_PNP_INLIERS = 20    # PnP-RANSAC inliers needed to accept a pose
+PNP_REPROJ_ERR = 2.5    # px, PnP-RANSAC inlier threshold
 KF_BASELINE_RATIO = 0.1 # new keyframe when baseline > ratio * median depth of tracked points
 KF_INLIER_RATIO = 0.6   # ... or when tracked inliers drop below ratio * inliers at last keyframe
-MAP_WINDOW = 5          # number of keyframes whose points stay in the local map
+MAP_WINDOW = 8          # number of keyframes whose points stay in the local map
