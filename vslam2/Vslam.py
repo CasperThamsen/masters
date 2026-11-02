@@ -219,7 +219,7 @@ def main():
     if not kitti:
         cap.release()
     cv2.destroyAllWindows()
-    np.save('poses.npy', np.array(poses))
+    np.savez('vo_poses.npz', poses=np.array(poses))
 
 if __name__ == "__main__":
     main()

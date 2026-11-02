@@ -44,6 +44,8 @@ def triangulate_points(K, T_wc1, T_wc2, pts1, pts2):
 
 def median_depth(T_wc, pts3d):
     """Median depth of world points as seen from the camera at T_wc."""
+    if len(pts3d) == 0:
+        return 1.0
     T_cw = np.linalg.inv(T_wc)
     z = T_cw[2, :3] @ pts3d.T + T_cw[2, 3]
     return float(np.median(z))

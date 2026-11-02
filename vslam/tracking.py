@@ -54,7 +54,7 @@ def update_pose(T_wc, R, t):
     """Chain the relative motion (ref -> cur) onto the camera-to-world pose."""
     T_cur_ref = np.eye(4)
     T_cur_ref[:3, :3] = R
-    T_cur_ref[:3, 3] = t #maybe add scale factor here ??
+    T_cur_ref[:3, 3] = t * 6.0990 #maybe add scale factor here ??
     return T_wc @ np.linalg.inv(T_cur_ref)
 
 def initialize_map(ref, cur, T_wc_ref, K):
@@ -73,6 +73,7 @@ def initialize_map(ref, cur, T_wc_ref, K):
         return "FAIL no pose", None, None, None, matches, 0
 
     R, t, inl_matches, pts_ref, pts_cur = result
+
     n_inliers = len(inl_matches)
     if n_inliers < MIN_INLIERS:
         return "FAIL few inliers", None, None, None, matches, n_inliers
