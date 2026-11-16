@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from . import utils
 from .config import (MIN_MATCHES, MIN_INLIERS, MIN_PARALLAX, MAX_LOST, MIN_INIT_POINTS,
-                     MIN_PNP_MATCHES, MIN_PNP_INLIERS, PNP_REPROJ_ERR, MAP_WINDOW, SCALE)
+                     MIN_PNP_MATCHES, MIN_PNP_INLIERS, PNP_REPROJ_ERR, MAP_WINDOW)
 from .mapping import new_map, map_add, map_prune, triangulate_points, need_keyframe
 
 orb = cv2.ORB_create(nfeatures=2000)
@@ -51,10 +51,11 @@ def estimate_pose(kp_ref, kp_cur, matches, K):
     return R, t.ravel(), inlier_matches, pts_ref[keep], pts_cur[keep]
 
 def update_pose(T_wc, R, t):
-    """Chain the relative motion (ref -> cur) onto the camera-to-world pose."""
+    """Chain the relative motion (ref -> cur) onto the camera-to-world pose.
+    output: T_wc (transformation from world to camera)"""
     T_cur_ref = np.eye(4)
     T_cur_ref[:3, :3] = R
-    T_cur_ref[:3, 3] = t * 6.0990 #maybe add scale factor here ??
+    T_cur_ref[:3, 3] = t #maybe add scale factor here ??
     return T_wc @ np.linalg.inv(T_cur_ref)
 
 def initialize_map(ref, cur, T_wc_ref, K):
@@ -148,6 +149,8 @@ def insert_keyframe(state, cur, T_wc, tracked_cur_idx):
 
 
 def new_state(K):
+    """Create a new VO state dictionary with an empty map and identity pose.
+    Everthing is set to default values."""
     return {
         'K': K,                # camera matrix
         'T_wc': np.eye(4),     # current camera-to-world pose
@@ -178,9 +181,13 @@ def VO_init(state, cur):
     """No map yet: wait for a reference frame, then for a second frame with enough parallax."""
     if state['ref'] is None:
         state['ref'] = cur
+        state['age'] = 0
         return "WAIT first frame", make_info('init', ref=cur)
 
     ref = state['ref']
+    state['age'] += 1
+    if state['age'] < 20:
+        return "WAIT gap", make_info('init', ref=ref)
     status, T_wc_cur, pts3d, des, matches, n_inliers = initialize_map(ref, cur, state['T_wc'], state['K'])
     info = make_info('init', len(matches), n_inliers, matches, ref)
 
@@ -211,7 +218,8 @@ def VO_init(state, cur):
     return status, info
 
 def VO_track(state, cur):
-    """Map exists: PnP against the local map, insert a keyframe when needed."""
+    """Map exists: PnP against the local map, insert a keyframe when image changes significantly (median pixel change = 10%).
+    Output: (status, info). Updates state in place."""
     status, T_wc, cur_idx, map_idx, n_matches = track_map(cur, state['map'], state['K'])
 
     if T_wc is None:

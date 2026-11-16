@@ -11,7 +11,7 @@ def main():
     state = new_state(camera_matrix)
     poses = [state['T_wc'].copy()]
     frame_count = 0
-    ids = [FRAME_STEP - 1]                           # new: KITTI frame index of each pose
+    ids = [FRAME_STEP - 1]     #KITTI frame index of each pose
 
     # Universal loop using the frame stream generator
     for ret, img in frame_stream():

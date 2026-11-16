@@ -12,7 +12,6 @@ MIN_MATCHES = 30         # matches after ratio test needed to even try a pose
 MIN_INLIERS = 5         # RANSAC/cheirality inliers needed to accept a pose
 MIN_PARALLAX = 15.0     # median pixel motion needed before trusting a pose
 MAX_LOST = 5           # consecutive failures before re-anchoring / re-initialising
-SCALE = 0.7897          # kitti calculated scale
 
 # --- local map parameters ---
 MIN_INIT_POINTS = 100    # triangulated points needed to accept the initial map
